@@ -11,7 +11,7 @@ export async function getAllNotes(req, res) {
   }
 }
 
-//
+// GET NOTE BY ID
 export async function getNoteById(req,res) {
   try {
     const note =await  Note.findById(req.params.id);
