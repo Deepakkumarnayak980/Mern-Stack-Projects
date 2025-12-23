@@ -1,20 +1,23 @@
 import express from 'express';
-import notesRouter from './router/notesRouter.js'
+import notesRouter from './router/notesRouter.js';
 import { connectionDB } from './config/db.js';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 
+dotenv.config();
 
-dotenv.config()
+const app = express();
+const PORT = process.env.PORT || 5002;
 
-const app= express();
-const PORT =process.env.PORT || 5002
+// ✅ MIDDLEWARE FIRST
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/notes",notesRouter)
+// ✅ ROUTES AFTER
+app.use("/api/notes", notesRouter);
 
-connectionDB()
+// DB connection
+connectionDB();
 
-app.listen(5001,()=>{
-    console.log(`Servers started on PORT : ${PORT}`);
-    
-})
-
+app.listen(PORT, () => {
+  console.log(`Server started on PORT : ${PORT}`);
+});
