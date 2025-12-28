@@ -6,7 +6,7 @@ import { Route, Routes } from "react-router-dom";
 
 const App = () => {
   return (
-    <div data-theme="forest">
+    <div data-theme="forest" className="bg-black">
     
       <Routes>
         <Route path="/" element={<HomePage />} />
