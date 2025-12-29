@@ -1,8 +1,9 @@
-import axios from "axios";
+
 import { ArrowLeftIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { api } from "../lib/axios";
 
 function CreatePage() {
   const [title, setTitle] = useState("");
@@ -21,7 +22,7 @@ function CreatePage() {
 
     setLoading(true);
     try {
-      await axios.post("http://localhost:5001/api/notes", {
+      await api.post("/notes", {
         title,
         content,
       });
