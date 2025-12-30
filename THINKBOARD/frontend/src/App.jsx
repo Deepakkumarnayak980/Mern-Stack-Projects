@@ -6,7 +6,8 @@ import { Route, Routes } from "react-router-dom";
 
 const App = () => {
   return (
-    <div data-theme="forest" >
+       <div className="relative h-full w-full">
+   
     
       <Routes>
         <Route path="/" element={<HomePage />} />

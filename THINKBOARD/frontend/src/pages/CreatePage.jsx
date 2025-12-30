@@ -85,6 +85,8 @@ function CreatePage() {
                     text-emerald-100
                     border-emerald-700
                     focus:border-emerald-400
+                    text-2xl
+    font-bold
                     h-12
                     w-full
                     p-3
