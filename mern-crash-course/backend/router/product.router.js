@@ -4,6 +4,8 @@ import { createProduct, detelProduct, getProduct, updatedProduct } from "../cont
 
 const router = express.Router();
 
+
+
 /* ================= GET ALL PRODUCTS ================= */
 router.get("/",getProduct );
 
