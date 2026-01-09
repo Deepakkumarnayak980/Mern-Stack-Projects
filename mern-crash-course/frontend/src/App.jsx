@@ -9,6 +9,8 @@ const App = () => {
   return (
     <Box minH="100vh">
       <NavBar />
+
+      
       <Routes>
         <Route path="/" element={<HomePages />} />
         <Route path="/create" element={<CreatePage />} />
