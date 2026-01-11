@@ -2,6 +2,9 @@
 
 ![Demo App](/frontend/public/screenshot-for-readme.png)
 
+
+
+
 About This Course:
 
 - ⚛️ Tech Stack: React.js, Node.js, Express.js, MongoDB, Chakra UI
