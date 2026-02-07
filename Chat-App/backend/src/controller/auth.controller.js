@@ -1,6 +1,7 @@
-import { generateToken } from "../lib/utils.js";
+
 import User from "../middleware/user.model.js"
-import bcrypt from "bcryptjs";
+import { generateToken } from "../lib/utils.js";
+import bcrypt from "bcryptjs"; 
 
 export const signUp = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -54,6 +55,42 @@ export const signUp = async (req, res) => {
 };
 
 
-export const logIn = (req, res) => {};
+export const logIn = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // 1. Find user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // 2. Compare password
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // 3. Generate JWT
+    generateToken(user._id, res);
+
+    // 4. Send response
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePic: user.profilePic,
+    });
+
+  } catch (error) {
+    console.log("Error in logIn controller:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
 
 export const logout = (req, res) => {};
