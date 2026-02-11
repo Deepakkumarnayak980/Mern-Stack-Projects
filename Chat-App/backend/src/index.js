@@ -1,25 +1,25 @@
-import express from "express"
-import dotenv from "dotenv"
-import cookieparser from "cookie-parser"
-import authRoute from "../src/router/auth.routes.js"
-import { connectDB } from "./lib/db.js"
+import express from "express";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import authRoute from "./router/auth.routes.js";
+import messageRouter from "./router/message.router.js";
+import { connectDB } from "./lib/db.js";
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
+const app = express();
 
-// middleware to read JSON body
-app.use(express.json())
+// Middlewares
+app.use(express.json());
+app.use(cookieParser());
 
-app.use(express.json())
-app.use(cookieparser())
+// Routes
+app.use("/api/auth", authRoute);
+app.use("/api/message", messageRouter);
 
-// routes
-app.use("/api/auth", authRoute)
+const PORT = process.env.PORT || 5000;
 
-const PORT = process.env.PORT || 5000
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port :${PORT}`)
-  connectDB()
-})
+app.listen(PORT, async () => {
+  console.log(`Server is running on port: ${PORT}`);
+  await connectDB();
+});
