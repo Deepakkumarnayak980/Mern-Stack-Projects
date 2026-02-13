@@ -4,22 +4,32 @@ import cookieParser from "cookie-parser";
 import authRoute from "./router/auth.routes.js";
 import messageRouter from "./router/message.router.js";
 import { connectDB } from "./lib/db.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 
-// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+
 app.use("/api/auth", authRoute);
 app.use("/api/message", messageRouter);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, async () => {
-  console.log(`Server is running on port: ${PORT}`);
-  await connectDB();
-});
+// ✅ Connect DB first, then start server
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port: ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Database connection failed:", err.message);
+  });
