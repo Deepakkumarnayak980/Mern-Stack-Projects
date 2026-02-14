@@ -1,21 +1,29 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Loader } from "lucide-react";
+import { Toaster } from "react-hot-toast";
+
 import Navbar from "./componemts/Navbar";
-import { Route, Routes } from "react-router-dom";
+
+import HomePage from "./HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
-import Settingpage from "./pages/Settingpage";
+import SettingsPage from "./pages/Settingpage";
 import ProfilePage from "./pages/ProfilePage";
-import HomePage from "./HomePage";
-import { useAuthStore } from "./stores/useAuth.store";
-import { Loader } from "lucide-react";
+
+import { useAuthStore } from "./stores/useAuth.store.js";
+
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+ 
 
+  // 🔹 Check authentication on app load
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
+  // 🔹 Show loader while checking authentication
   if (isCheckingAuth) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -25,16 +33,42 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div >
       <Navbar />
 
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/settings" element={<Settingpage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        {/* Home - Protected */}
+        <Route
+          path="/"
+          element={authUser ? <HomePage /> : <Navigate to="/login" />}
+        />
+
+        {/* Signup - Only if NOT logged in */}
+        <Route
+          path="/signup"
+          element={authUser ? <SignUpPage /> : <Navigate to="/" />}
+        />
+
+        {/* Login - Only if NOT logged in */}
+        <Route
+          path="/login"
+          element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+        />
+
+        {/* Profile - Protected */}
+        <Route
+          path="/profile"
+          element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+        />
+
+        {/* Settings - Protected */}
+        <Route
+          path="/settings"
+          element={authUser ? <SettingsPage /> : <Navigate to="/login" />}
+        />
       </Routes>
+
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };
