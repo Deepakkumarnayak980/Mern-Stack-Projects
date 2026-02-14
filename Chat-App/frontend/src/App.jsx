@@ -46,13 +46,13 @@ const App = () => {
         {/* Signup - Only if NOT logged in */}
         <Route
           path="/signup"
-          element={authUser ? <SignUpPage /> : <Navigate to="/" />}
+          element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
         />
 
         {/* Login - Only if NOT logged in */}
         <Route
           path="/login"
-          element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+          element={authUser ? <LoginPage /> : <Navigate to="/" />}
         />
 
         {/* Profile - Protected */}
