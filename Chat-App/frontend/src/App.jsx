@@ -42,11 +42,11 @@ const App = () => {
           path="/"
           element={authUser ? <HomePage /> : <Navigate to="/login" />}
         />
-
+  
         {/* Signup - Only if NOT logged in */}
         <Route
           path="/signup"
-          element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
+          element={authUser ? <SignUpPage /> : <Navigate to="/" />}
         />
 
         {/* Login - Only if NOT logged in */}
