@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
 import Navbar from "./componemts/Navbar";
@@ -11,29 +10,30 @@ import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/Settingpage";
 import ProfilePage from "./pages/ProfilePage";
 
-import { useAuthStore } from "./stores/useAuth.store.js";
-
+import { useAuthStore } from "./stores/useAuth.store";
+import { useThemeStore } from "./stores/useTheme.store";
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
- 
+  const authUser = useAuthStore((state) => state.authUser);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+  const isCheckingAuth = useAuthStore((state) => state.isCheckingAuth);
 
-  // 🔹 Check authentication on app load
+  const theme = useThemeStore((state) => state.theme);
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  // 🔹 Show loader while checking authentication
   if (isCheckingAuth) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Loader className="size-10 animate-spin" />
+        Loading...
       </div>
     );
   }
 
   return (
-    <div >
+    <div data-theme={theme || "coffee"} className="min-h-screen">
       <Navbar />
 
       <Routes>
@@ -42,17 +42,17 @@ const App = () => {
           path="/"
           element={authUser ? <HomePage /> : <Navigate to="/login" />}
         />
-  
+
         {/* Signup - Only if NOT logged in */}
         <Route
           path="/signup"
-          element={authUser ? <SignUpPage /> : <Navigate to="/" />}
+          element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
         />
 
         {/* Login - Only if NOT logged in */}
         <Route
           path="/login"
-          element={authUser ? <LoginPage /> : <Navigate to="/" />}
+          element={!authUser ? <LoginPage /> : <Navigate to="/" />}
         />
 
         {/* Profile - Protected */}
@@ -68,7 +68,7 @@ const App = () => {
         />
       </Routes>
 
-      <Toaster position="top-right" reverseOrder={false} />
+      <Toaster position="top-right" />
     </div>
   );
 };
