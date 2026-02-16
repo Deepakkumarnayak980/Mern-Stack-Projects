@@ -40,7 +40,7 @@ const App = () => {
         {/* Home - Protected */}
         <Route
           path="/"
-          element={authUser ? <HomePage /> : <Navigate to="/login" />}
+          element={!authUser ? <HomePage /> : <Navigate to="/login" />}
         />
 
         {/* Signup - Only if NOT logged in */}
