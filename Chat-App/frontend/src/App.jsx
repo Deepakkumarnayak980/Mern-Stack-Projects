@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 
 import Navbar from "./componemts/Navbar";
 
-import HomePage from "./HomePage";
+import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/Settingpage";
@@ -40,7 +40,7 @@ const App = () => {
         {/* Home - Protected */}
         <Route
           path="/"
-          element={!authUser ? <HomePage /> : <Navigate to="/login" />}
+          element={authUser ? <HomePage /> : <Navigate to="/login" />}
         />
 
         {/* Signup - Only if NOT logged in */}
@@ -66,7 +66,7 @@ const App = () => {
           path="/settings"
           element={authUser ? <SettingsPage /> : <Navigate to="/login" />}
         />
-      </Routes>
+        </Routes>
 
       <Toaster position="top-right" />
     </div>

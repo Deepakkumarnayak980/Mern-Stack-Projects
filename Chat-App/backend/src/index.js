@@ -22,7 +22,7 @@ app.use(cors({
 }));
 
 app.use("/api/auth", authRoute);
-app.use("/api/message", messageRouter);
+app.use("/api/messages", messageRouter);
 
 const PORT = process.env.PORT || 5001;
 
