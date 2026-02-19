@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useChatStore } from "../stores/useChatSrore";
 import ChatHeader from "./ChatHeader";
-import MessageInput from "../MessageInput";
+import MessageInput from "./MessageInput.jsx";
 import MessageSkeleton from "./skeleton/MessageSkeleton";
 
 const ChatContainer = () => {

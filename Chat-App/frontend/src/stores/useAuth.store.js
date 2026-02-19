@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
+import { io } from "socket.io-client";
+
+const BASE_URL = "http://localhost:5001";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -8,13 +11,15 @@ export const useAuthStore = create((set, get) => ({
   isLoggingIn: false,
   isUpdatingProfile: false,
   isCheckingAuth: true,
-  onLineUser:[],
+  onlineUsers: [],
+  socket: null,
 
   // ================= CHECK AUTH =================
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
+      get().connectSocket();
     } catch (error) {
       if (error.response?.status === 401) {
         set({ authUser: null });
@@ -29,15 +34,13 @@ export const useAuthStore = create((set, get) => ({
   // ================= SIGNUP =================
   signup: async (data) => {
     set({ isSigningUp: true });
-
     try {
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data });
       toast.success("Account created successfully");
+      get().connectSocket();
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Signup failed"
-      );
+      toast.error(error.response?.data?.message || "Signup failed");
     } finally {
       set({ isSigningUp: false });
     }
@@ -46,19 +49,13 @@ export const useAuthStore = create((set, get) => ({
   // ================= LOGIN =================
   login: async (data) => {
     set({ isLoggingIn: true });
-
     try {
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
       toast.success("Logged in successfully");
-
-      // if you have socket functions
-      // get().connectSocket();
-
+      get().connectSocket();
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Login failed"
-      );
+      toast.error(error.response?.data?.message || "Login failed");
     } finally {
       set({ isLoggingIn: false });
     }
@@ -68,41 +65,57 @@ export const useAuthStore = create((set, get) => ({
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
+      get().disconnectSocket();
       set({ authUser: null });
       toast.success("Logged out successfully");
-
-      // get().disconnectSocket();
-
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Logout failed"
-      );
+      toast.error(error.response?.data?.message || "Logout failed");
     }
   },
 
   // ================= UPDATE PROFILE =================
   updateProfile: async (data) => {
     set({ isUpdatingProfile: true });
-
     try {
-      const res = await axiosInstance.put(
-        "/auth/update-profile",
-        data
-      );
-
+      const res = await axiosInstance.put("/auth/update-profile", data);
       set({ authUser: res.data });
       toast.success("Profile updated successfully");
-
     } catch (error) {
-      console.log("Error in updateProfile:", error);
-
-      toast.error(
-        error.response?.data?.message ||
-        "Profile update failed"
-      );
-
+      toast.error(error.response?.data?.message || "Profile update failed");
     } finally {
       set({ isUpdatingProfile: false });
     }
+  },
+
+  // ================= CONNECT SOCKET =================
+  connectSocket: () => {
+    const { authUser, socket } = get();
+
+    if (!authUser || socket?.connected) return;
+
+    const newSocket = io(BASE_URL, {
+      query: {
+        userId: authUser._id,
+      },
+    });
+
+    newSocket.connect();
+
+    // Listen for online users
+    newSocket.on("getOnlineUsers", (users) => {
+      set({ onlineUsers: users });
+    });
+
+    // Save socket in state
+    set({ socket: newSocket });
+  },
+
+  // ================= DISCONNECT SOCKET =================
+  disconnectSocket: () => {
+    const { socket } = get();
+    if (socket?.connected) {
+      socket.disconnect();
+    }
+    set({ socket: null, onlineUsers: [] });
   },
 }));
